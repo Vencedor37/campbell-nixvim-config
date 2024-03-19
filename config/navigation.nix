@@ -1,10 +1,10 @@
 { pkgs, ... }: {
   plugins.oil = {
-    enable = true;
+    enable = false;
     viewOptions = { showHidden = true; };
   };
   plugins.neo-tree = {
-    enable = false;
+    enable = true;
     filesystem.filteredItems.visible = true;
     window.position = "float";
   };

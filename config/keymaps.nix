@@ -4,7 +4,8 @@
     {
       mode = "n";
       key = "<leader>e";
-      action = "<cmd>Oil --float<CR>";
+      action = "<cmd>Neotree position=left<CR>";
+      #action = "<cmd>Oil --float<CR>";
       options = {
         silent = true;
         desc = "Open FileTree";
@@ -31,4 +32,10 @@
       };
     }
   ];
+  extraConfigLua = ''
+    local function greet(name)
+      print("Hello, " .. name .. "!")
+    end
+  '';
+
 }

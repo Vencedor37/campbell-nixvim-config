@@ -1,9 +1,8 @@
 {
-  colorschemes.rose-pine = {
+  colorschemes.catppuccin = {
     enable = true;
-    disableItalics = true;
-    dimInactive = true;
   };
+
   plugins.treesitter = {
     enable = true;
     ensureInstalled = [ "php" "css" "html" "typescript" "nix" ];
