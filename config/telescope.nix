@@ -9,6 +9,14 @@
         fuzzy = true;
       };
     };
+    defaults = {
+      layout_config = {
+        horizontal = {
+          prompt_position = "top";
+        };
+      };
+      sorting_strategy = "ascending";
+    };
     extraOptions = {
       defaults = {
         vimgrep_arguments = [
@@ -41,4 +49,17 @@
       };
     };
   };
+
+  extraConfigLua = ''
+    require "telescope".setup {
+      defaults = {
+        mappings = {
+          i = {
+            ["<C-j>"] = "move_selection_next",
+            ["<C-k>"] = "move_selection_previous",
+          },    
+        },
+      },
+    }
+  '';
 }
