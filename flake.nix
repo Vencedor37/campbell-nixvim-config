@@ -1,44 +1,34 @@
 {
-  description = "A nixvim configuration";
+  description = "A dev environment for PHP with Neovim";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixvim.url = "github:nix-community/nixvim";
-    flake-parts.url = "github:hercules-ci/flake-parts";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    phps.url = "github:fossar/nix-phps";
   };
 
-  outputs = { self, nixvim, flake-parts, ...  } @ inputs:
-    flake-parts.lib.mkFlake {inherit inputs;} {
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
-
-      perSystem = { pkgs, system, ...  }: let
-        nixvimLib = nixvim.lib.${system};
-        nixvim' = nixvim.legacyPackages.${system};
-        nixvimModule = {
-          inherit pkgs;
-          module = import ./config; # import the module directly
-          extraSpecialArgs = {};
-        };
-        nvim = nixvim'.makeNixvimWithModule nixvimModule;
-        devEnv = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            php
+  outputs = { self, nixpkgs, flake-utils, phps, ... }: 
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+      {
+        devShell = pkgs.mkShell {
+          buildInputs = [
+            pkgs.neovim
+            phps.packages.${system}.php74
+            (pkgs.callPackage ./composer.nix {
+              inherit (pkgs) fetchurl makeWrapper unzip lib;
+              mkDerivation = pkgs.stdenv.mkDerivation;
+              php = phps.packages.${system}.php74;
+            })
+            # This line assumes composer.nix uses fetchurl and other inputs
           ];
-        };
-      in {
-        checks = {
-          default = nixvimLib.check.mkTestDerivationFromNixvimModule nixvimModule;
-        };
 
-        packages = {
-          devEnv = devEnv;
-          default = nvim;
+          shellHook = ''
+            # Setup environment variables if needed
+          '';
         };
-      };
-    };
+      });
 }
+
