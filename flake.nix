@@ -15,6 +15,7 @@
       {
         devShell = pkgs.mkShell {
           buildInputs = [
+            pkgs.nodejs_21
             pkgs.neovim
             phps.packages.${system}.php74
             (pkgs.callPackage ./composer.nix {
