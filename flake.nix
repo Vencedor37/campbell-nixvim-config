@@ -18,6 +18,8 @@
             pkgs.nodejs_21
             pkgs.neovim
             phps.packages.${system}.php74
+            pkgs.ripgrep
+            pkgs.perl
             (pkgs.callPackage ./composer.nix {
               inherit (pkgs) fetchurl makeWrapper unzip lib;
               mkDerivation = pkgs.stdenv.mkDerivation;
