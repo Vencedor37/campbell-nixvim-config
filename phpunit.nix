@@ -1,24 +1,31 @@
-{ pkgs ? import <nixpkgs> {} }:
+{ stdenv, mkDerivation, fetchurl, makeWrapper, unzip, lib, php }:
 
-pkgs.stdenv.mkDerivation rec {
+let
   pname = "phpunit";
-  version = "9.5.10";  # Specify the version you need
+  version = "9.5.28";
+in
+mkDerivation {
+  inherit pname version;
 
-  src = pkgs.fetchurl {
+  src = fetchurl {
     url = "https://phar.phpunit.de/phpunit-${version}.phar";
-    sha256 = "";  # Update the sha256 checksum
+    hash = "sha256-2LK5ZGjAtmzussNF7RSSUkgIn+dst2x7WRq5mqBNMZo=";
   };
 
-  buildInputs = [ pkgs.makeWrapper ];
+  dontUnpack = true;
+  nativeBuildInputs = [ makeWrapper ];
 
   installPhase = ''
+    runHook preInstall
     mkdir -p $out/bin
-    cp $src $out/bin/phpunit
-    chmod +x $out/bin/phpunit
-    wrapProgram $out/bin/phpunit --prefix PATH : ${pkgs.php74}/bin
+    install -D $src $out/libexec/phpunit/phpunit.phar
+    makeWrapper ${php}/bin/php $out/bin/phpunit \
+      --add-flags "$out/libexec/phpunit/phpunit.phar" \
+      --prefix PATH : ${lib.makeBinPath [ unzip ]}
+    runHook postInstall
   '';
 
-  meta = with pkgs.lib; {
+  meta = with lib; {
     description = "PHPUnit is a programmer-oriented testing framework for PHP";
     homepage = "https://phpunit.de/";
     license = licenses.bsd3;

@@ -20,12 +20,19 @@
             phps.packages.${system}.php74
             pkgs.ripgrep
             pkgs.perl
+            pkgs.lua5_1
+            pkgs.unzip
+            pkgs.quicktype
             (pkgs.callPackage ./composer.nix {
               inherit (pkgs) fetchurl makeWrapper unzip lib;
               mkDerivation = pkgs.stdenv.mkDerivation;
               php = phps.packages.${system}.php74;
             })
-            # This line assumes composer.nix uses fetchurl and other inputs
+            (pkgs.callPackage ./phpunit.nix {
+              inherit (pkgs) fetchurl makeWrapper unzip lib;
+              mkDerivation = pkgs.stdenv.mkDerivation;
+              php = phps.packages.${system}.php74;
+            })
           ];
 
           shellHook = ''
